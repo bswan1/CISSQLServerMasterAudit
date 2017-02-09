@@ -97,7 +97,8 @@ Print '– Start revoking execute permissions on SP to Public user –'
 
 REVOKE EXECUTE ON xp_availablemedia TO PUBLIC;
 REVOKE EXECUTE ON xp_enumgroups to PUBLIC;
-REVOKE EXECUTE ON xp_fixeddrives TO PUBLIC
+REVOKE EXECUTE ON xp_fixeddrives TO PUBLIC;
+REVOKE EXECUTE ON xp_dirtree TO PUBLIC; 
 REVOKE EXECUTE ON xp_servicecontrol TO PUBLIC;
 REVOKE EXECUTE ON xp_subdirs TO PUBLIC;
 REVOKE EXECUTE ON xp_regaddmultistring TO PUBLIC;
@@ -378,3 +379,27 @@ CLOSE csrDatabases;
 DEALLOCATE csrDatabases;
 Print '———- Hardening Script Complete! —————-'
 EXEC sp_change_users_login @Action='Report'; 
+
+
+Print 'Double checking all users for Orphans and fixing them if any are encountered'
+DECLARE @UserCount INT
+DECLARE @UserCurr INT
+DECLARE @userName VARCHAR(100)
+DECLARE @vsql NVARCHAR(4000)
+DECLARE @Users TABLE(
+id INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+userName VARCHAR(100))
+INSERT INTO @Users(UserName) 
+SELECT [name] FROM 
+master.[dbo].sysUsers 
+SELECT @UserCount = max([id]) FROM @Users
+SET @UserCurr = 1
+
+WHILE (@UserCurr <= @UserCount)
+BEGIN
+ SELECT @userName=userName FROM @Users WHERE [id] =@UserCurr
+ SET @vsql = '[dbo].[sp_change_users_login] ''AUTO_FIX'',''' + @userName + ''''
+ -- EXEC(@vsql)
+ PRINT @vsql
+ SET @UserCurr = @UserCurr + 1
+END
