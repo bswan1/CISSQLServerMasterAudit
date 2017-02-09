@@ -377,7 +377,7 @@ BEGIN
 END
 CLOSE csrDatabases;
 DEALLOCATE csrDatabases;
-Print '———- Hardening Script Complete! —————-'
+Print '———- Guest Revokes Complete and Public View all databases! —————-'
 EXEC sp_change_users_login @Action='Report'; 
 
 
@@ -403,3 +403,27 @@ BEGIN
  PRINT @vsql
  SET @UserCurr = @UserCurr + 1
 END
+
+--Dropping built-in users role
+PRINT 'Checking for BUILTIN\Administrators to Drop'
+
+USE MASTER
+
+IF EXISTS (SELECT * FROM sys.server_principals
+
+WHERE name = N'BUILTIN\Administrators')
+
+DROP LOGIN [BUILTIN\Administrators]
+
+GO
+
+--Enable Common Criteria - C2 is deprecated
+EXEC sys.sp_configure N'show advanced options', N'1'  RECONFIGURE WITH OVERRIDE
+GO
+EXEC sys.sp_configure N'common criteria compliance enabled', N'1'
+GO
+RECONFIGURE WITH OVERRIDE
+GO
+EXEC sys.sp_configure N'show advanced options', N'0'  RECONFIGURE WITH OVERRIDE
+GO
+Print '———- CIS Auto Benchmarker Complete! —————-'
