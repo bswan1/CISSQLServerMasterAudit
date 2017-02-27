@@ -14,7 +14,7 @@ CONVERT(varchar(500),@@VERSION) as Version
 
 -- Start MSSQL Server port check
 
-print '———- Start MSSQL Server port check ————–'
+print 'Start MSSQL Server port check'
 DECLARE @portNumber varchar(20), @key varchar(100)
 if charindex('\',@@servername,0) <>0
 begin
@@ -28,7 +28,7 @@ end
 EXEC master..xp_regread @rootkey='HKEY_LOCAL_MACHINE', @key=@key, @value_name='Tcpport', @value=@portNumber OUTPUT
 
 SELECT 'Server Name: '+@@servername + ' Port Number:'+convert(varchar(10),@portNumber)
-print '———- End MSSQL Server port check ————–'
+print 'End MSSQL Server port check'
 
 
 -- End MSSQL Server port check
@@ -38,7 +38,7 @@ Print '– Note ::: Please ensure to configure SQL Server with a fixed customized 
 Print '– Note ::: Apply latest Service Pack if applicable –'
 --Checking the MSSQL Server Service account.
 print ' '
-print '———- Start MSSQL Server Service Account check ————–'
+print 'Start MSSQL Server Service Account check'
 print ' '
 SET NOCOUNT ON
 GO
@@ -65,10 +65,10 @@ execute master..xp_regread 'HKEY_LOCAL_MACHINE',@REGKEY,'ObjectName',@srvacct ou
 select (case @instance when null then 'MSSQLSERVER' else @instance end) as 'Service / Instance', @srvacct as 'Service account'
 print ' '
 
-print '———- End MSSQL Server Service Account check ————–'
+print 'End MSSQL Server Service Account check'
 
 
-print '– Start checking the groups added in SQL Server –'
+print 'Start checking the groups added in SQL Server'
 SELECT [name] as PrincipalName, type as PrincipalType, type_desc as TypeDescription, create_date as CreationDate,
 modify_date as ModificationDate
 FROM sys.server_principals
@@ -112,7 +112,7 @@ Print 'Revoking permissions is now completed'
 Print '– Revoking of execute permissions on SP to Public user is completed –'
 
 Print ' '
-Print '———- Revoking CONNECT permissions on the guest user from these databases except master, msdb and tempdb —————-'
+Print 'Revoking CONNECT permissions on the guest user from these databases except master, msdb and tempdb'
 
 DECLARE @database_id int, @database_name nvarchar(100);
 
@@ -143,9 +143,9 @@ END
 CLOSE database_cursor
 DEALLOCATE database_cursor
 
-Print '———- Revoking CONNECT permissions on the guest user completed ——-'
+Print 'Revoking CONNECT permissions on the guest user completed'
 
-Print '———- Disable Trustworthy Asset Start ——-'
+Print 'Disable Trustworthy Asset Start'
 
 
 Declare @DBName varchar(100),@trust varchar(200),@guest varchar(200)
@@ -168,16 +168,16 @@ end;
 close trustworthy;
 deallocate trustworthy;
 
-Print '———- Disable Trustworthy Asset completed ——-'
+Print 'Disable Trustworthy Asset completed'
 
-Print '—— Start setting up SQL Server Error Log Files to 15 —–'
+Print '-Start setting up SQL Server Error Log Files to 15-'
 
 USE master;
 GO
 EXEC xp_instance_regwrite N'HKEY_LOCAL_MACHINE', N'Software\Microsoft\MSSQLServer\MSSQLServer', N'NumErrorLogs', REG_DWORD, 15
 GO
 
-Print '—— End : SQL Server Error Logs increased to 12 —–'
+Print '-End : SQL Server Error Logs increased to 12-'
 GO
 
 --Verify whether password policy is enabled
@@ -221,10 +221,10 @@ CLOSE user_cursor;
 DEALLOCATE user_cursor;
 
 Print ' '
-Print '———- End Password policy check —————-'
+Print '-End Password policy check-'
 
 Print ' '
-Print '———- Start enabling/disabling server level configuration parameters —————-'
+Print '-Start enabling/disabling server level configuration parameters-'
 
 -- This part will disable Ad Hoc Distributed Queries Server Configuration Option —
 
@@ -308,7 +308,7 @@ GO
 EXECUTE sp_configure 'show advanced options', 0;
 RECONFIGURE;
 
-Print '———- End enabling/disabling server level configuration parameters —————-'
+Print '-End enabling/disabling server level configuration parameters-'
 
 
 DECLARE @modeScriptOnly bit;
@@ -377,7 +377,7 @@ BEGIN
 END
 CLOSE csrDatabases;
 DEALLOCATE csrDatabases;
-Print '———- Guest Revokes Complete and Public View all databases! —————-'
+Print '-Guest Revokes Complete and Public View all databases!-'
 EXEC sp_change_users_login @Action='Report'; 
 
 
@@ -426,4 +426,4 @@ RECONFIGURE WITH OVERRIDE
 GO
 EXEC sys.sp_configure N'show advanced options', N'0'  RECONFIGURE WITH OVERRIDE
 GO
-Print '———- CIS Auto Benchmarker Complete! —————-'
+Print '-CIS Auto Benchmarker Complete!-'
