@@ -186,7 +186,7 @@ GO
 -- c. Alphanumeric password
 -- d. Minmum password length
 
-Print '———- Start Password policy check ————–'
+Print '-Start Password policy check-'
 
 print 'MSSQL 2008 and above Password policy is enabled at windows level'
 select name as Loginname,is_policy_checked, is_expiration_checked, is_disabled from master.sys.sql_logins
