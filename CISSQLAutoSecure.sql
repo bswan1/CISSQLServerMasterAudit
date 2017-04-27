@@ -2,7 +2,10 @@
 -- Script Created on 2/8/2017
 -- Version 1.2 
 -- CIS Full Security Auto Setup for SQL Server 2008 R2, 2012, 2014, 2016
-
+-- Do not Run This Script on DotNetNuke SQL Servers (which require Mixed Mode) 
+--Do not Run This Script on SCCM Windows System Center SQL Servers (Require CLR and other specifics)
+-- CIS cites DB mail as a security risk, but it is widely used in nearly every shop, comment the code out if needed
+--Do not run this script on production environments without first testing in development
 
 -- Find out the Version Details 
 
@@ -33,9 +36,9 @@ print 'End MSSQL Server port check'
 
 -- End MSSQL Server port check
 
-Print '– Note ::: Please ensure to configure SQL Server with a fixed customized port –'
+Print 'â€“ Note ::: Please ensure to configure SQL Server with a fixed customized port â€“'
 
-Print '– Note ::: Apply latest Service Pack if applicable –'
+Print 'â€“ Note ::: Apply latest Service Pack if applicable â€“'
 --Checking the MSSQL Server Service account.
 print ' '
 print 'Start MSSQL Server Service Account check'
@@ -74,26 +77,26 @@ modify_date as ModificationDate
 FROM sys.server_principals
 WHERE type_desc IN ('WINDOWS_GROUP')
 ORDER BY type_desc
-print '– End checking the groups added in SQL Server –'
+print 'â€“ End checking the groups added in SQL Server â€“'
 
-print '– Start renaming sa to changed_sa –'
+print 'â€“ Start renaming sa to changed_sa â€“'
 
 If  Exists (select loginname from master.dbo.syslogins 
     where name = 'sa' )
 Begin ALTER LOGIN sa WITH NAME = changed_sa;
-ALTER LOGIN changed_sa ENABLE;
+ALTER LOGIN changed_sa DISABLE;
 End
-print '– End renaming sa to changed_sa. changed_sa is now in enabled state –'
+print 'â€“ End renaming sa to changed_sa. changed_sa is now in DISABLED state â€“'
 
 
-print '– Start setting Auditing to both failed and sucessful login attempts'
+print 'â€“ Start setting Auditing to both failed and sucessful login attempts'
 USE [master]
 GO
 EXEC xp_instance_regwrite N'HKEY_LOCAL_MACHINE', N'Software\Microsoft\MSSQLServer\MSSQLServer', N'AuditLevel', REG_DWORD, 3
 GO
 Print 'Auditing setup now completed'
-print '– End setting Auditing to failed login attempts only –'
-Print '– Start revoking execute permissions on SP to Public user –'
+print 'â€“ End setting Auditing to failed login attempts only â€“'
+Print 'â€“ Start revoking execute permissions on SP to Public user â€“'
 
 REVOKE EXECUTE ON xp_availablemedia TO PUBLIC;
 REVOKE EXECUTE ON xp_enumgroups to PUBLIC;
@@ -109,7 +112,7 @@ REVOKE EXECUTE ON xp_regremovemultistring TO PUBLIC;
 REVOKE EXECUTE ON xp_regwrite TO PUBLIC;
 REVOKE EXECUTE ON xp_regread TO PUBLIC;
 Print 'Revoking permissions is now completed'
-Print '– Revoking of execute permissions on SP to Public user is completed –'
+Print 'â€“ Revoking of execute permissions on SP to Public user is completed â€“'
 
 Print ' '
 Print 'Revoking CONNECT permissions on the guest user from these databases except master, msdb and tempdb'
@@ -226,7 +229,7 @@ Print '-End Password policy check-'
 Print ' '
 Print '-Start enabling/disabling server level configuration parameters-'
 
--- This part will disable Ad Hoc Distributed Queries Server Configuration Option —
+-- This part will disable Ad Hoc Distributed Queries Server Configuration Option â€”
 
 EXECUTE sp_configure 'show advanced options', 1;
 RECONFIGURE;
@@ -241,13 +244,13 @@ RECONFIGURE;
 EXECUTE sp_configure 'clr enabled', 0;
 RECONFIGURE;
 
---Disable Cross DB ownership chaining —
+--Disable Cross DB ownership chaining â€”
 
 EXECUTE sp_configure 'Cross db ownership chaining', 0;
 RECONFIGURE;
 GO
 
---Disable DB Mail —
+--Disable DB Mail â€”
 
 EXECUTE sp_configure 'show advanced options', 1;
 RECONFIGURE;
@@ -257,7 +260,7 @@ GO
 EXECUTE sp_configure 'show advanced options', 0;
 RECONFIGURE;
 
---Disable Ole Automation Procedures —
+--Disable Ole Automation Procedures â€”
 
 EXECUTE sp_configure 'show advanced options', 1;
 RECONFIGURE;
@@ -277,7 +280,7 @@ GO
 EXECUTE sp_configure 'show advanced options', 0;
 RECONFIGURE;
 
---Disable scan for startup procedures —
+--Disable scan for startup procedures â€”
 
 EXECUTE sp_configure 'show advanced options', 1;
 RECONFIGURE;
@@ -290,7 +293,7 @@ EXECUTE sp_configure 'Remote admin connections', 0;
 RECONFIGURE;
 GO
 
---Enable Default trace for audit purpose —
+--Enable Default trace for audit purpose â€”
 
 EXECUTE sp_configure 'show advanced options', 1;
 RECONFIGURE;
@@ -299,7 +302,7 @@ RECONFIGURE;
 GO
 EXECUTE sp_configure 'show advanced options', 0;
 RECONFIGURE;
---Disable xp_cmdshell —
+--Disable xp_cmdshell â€”
 EXECUTE sp_configure 'show advanced options', 1;
 RECONFIGURE;
 EXECUTE sp_configure 'Xp_cmdshell', 0;
