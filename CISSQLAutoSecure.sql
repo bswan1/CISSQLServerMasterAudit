@@ -2,9 +2,9 @@
 -- Script Created on 2/8/2017
 -- Version 1.2 
 -- CIS Full Security Auto Setup for SQL Server 2008 R2, 2012, 2014, 2016
--- Do not Run This Script on DotNetNuke SQL Servers (which require Mixed Mode) 
 --Do not Run This Script on SCCM Windows System Center SQL Servers (Require CLR and other specifics)
--- CIS cites DB mail as a security risk, but it is widely used in nearly every shop, comment the code out if needed
+--Test carefully on any COTS running this e.g. PeopleSoft or Business Objects or DotNetNuke  SQL Servers databases (Require Mixed Mode)
+--CIS cites DB mail as a security risk, but it is widely used in nearly every shop, comment the code out if needed
 --Do not run this script on production environments without first testing in development
 
 -- Find out the Version Details 
